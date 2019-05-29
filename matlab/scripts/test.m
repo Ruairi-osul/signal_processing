@@ -3,36 +3,19 @@ addpath(genpath(folder_path))
 load('sampleEEGdata.mat')
 %%
 
-fs = EEG.srate;
-t = EEG.times;
-chan = 2;
-n = EEG.pnts;
-data = EEG.data(chan, :, :);
-data = mean(data, 3);
+%% Wavelet convolution:
+% data
+chan_name = 'pz';
+data = EEG.data(get_chan_ind(chan_name, EEG), :, 1);
 
-wt = -2:1/fs:2;
-cycles = 7;
-f = 8;
-wavelet = create_wavelet(wt, cycles, 8);
-
-res = wavelet_convolve(wavelet, data);
-
-figure(1), clf
-subplot(211)
-plot(t, data)
-
-subplot(212)
-plot(t, real(res))
-
-%%
+% wavelets
+num_f = 5;
 min_f = 2;
 max_f = 30;
-num_f = 20;
-[wavelets, f] = wavelet_range(min_f, max_f, num_f, wt);
-tf = zeros(num_f, n);
-for i = 1:num_f
-    coefs = wavelet_convolve(wavelets(i,:), data);
-    tf(i, :) = abs(coefs);
-end
-contourf(1:n, f, tf, 'linecolor', 'none')
+wt = -2:1/EEG.srate:2;
+min_cycle = 4;
+max_cycle = 10;
 
+[tf, f] = wavelet_fun(data, min_f,max_f, num_f, wt);
+
+contourf(1:EEG.pnts, f, abs(tf), num_f, 'linecolor', 'none')
