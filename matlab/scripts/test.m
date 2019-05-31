@@ -1,21 +1,44 @@
+clear all
 folder_path = 'C:\Users\Rory\extra_repos\signal_processing\matlab';
 addpath(genpath(folder_path))
 load('sampleEEGdata.mat')
+
+
 %%
 
-%% Wavelet convolution:
-% data
-chan_name = 'pz';
-data = EEG.data(get_chan_ind(chan_name, EEG), :, 1);
+p = 'C:\Users\Rory\Downloads\anna.csv';
+anna = csvread(p);
 
-% wavelets
-num_f = 5;
-min_f = 2;
-max_f = 30;
-wt = -2:1/EEG.srate:2;
-min_cycle = 4;
-max_cycle = 10;
+fs = 4000;
+annaX = rfft(anna);
+hz = rfftfreq(length(anna), fs);
 
-[tf, f] = wavelet_fun(data, min_f,max_f, num_f, wt);
+%% where anna is the data array
 
-contourf(1:EEG.pnts, f, abs(tf), num_f, 'linecolor', 'none')
+q_factor = 35;
+to_filter = 50;
+wo = to_filter / (fs/2);
+bw = wo / q_factor;
+[b, a] = iirnotch(wo, bw);
+anna_f = filtfilt(b, a, anna);
+%%
+annaXf = rfft(anna_f);
+hzf = rfftfreq(length(anna_f), fs);
+
+%%
+
+figure(1), clf
+subplot(211)
+plot(hz, abs(annaX).^2)
+xlabel('frequency [Hz]')
+ylabel('power')
+xlim([0, 5])
+
+subplot(212)
+plot(hzf, abs(annaXf).^2)
+xlabel('frequency [Hz]')
+ylabel('power')
+xlim([0, 5])
+
+
+%%

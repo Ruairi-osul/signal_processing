@@ -3,6 +3,8 @@ addpath(genpath(folder_path))
 load('sampleEEGdata.mat')
 %%
 
+p = 
+
 %% single trial
 % data
 chan_name = 'pz';
