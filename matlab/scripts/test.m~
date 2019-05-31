@@ -1,0 +1,12 @@
+clear all
+folder_path = '/home/ruairi/repos/signal_processing/matlab';
+addpath(genpath(folder_path))
+load('sampleEEGdata.mat')
+
+%%
+
+chan_ind = 43;
+trial_ind = 4;
+data = EEG.data(chan_ind, :, trial_ind);
+t = EEG.times;
+

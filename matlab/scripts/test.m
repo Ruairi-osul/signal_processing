@@ -1,44 +1,39 @@
 clear all
-folder_path = 'C:\Users\Rory\extra_repos\signal_processing\matlab';
+folder_path = '/home/ruairi/repos/signal_processing/matlab';
 addpath(genpath(folder_path))
 load('sampleEEGdata.mat')
 
-
 %%
 
-p = 'C:\Users\Rory\Downloads\anna.csv';
-anna = csvread(p);
+fs = EEG.srate;
+t = EEG.times;
 
-fs = 4000;
-annaX = rfft(anna);
-hz = rfftfreq(length(anna), fs);
+frex = logspace(log10(10), log10(fs/5), 20);
 
-%% where anna is the data array
+timewin = 300; % in ms
+timewin = round(timewin / (fs * 1000)) % in samples
 
-q_factor = 35;
-to_filter = 50;
-wo = to_filter / (fs/2);
-bw = wo / q_factor;
-[b, a] = iirnotch(wo, bw);
-anna_f = filtfilt(b, a, anna);
-%%
-annaXf = rfft(anna_f);
-hzf = rfftfreq(length(anna_f), fs);
+window_centres = -300:25:800;
+times_idx = dsearchn(t', window_centres');
 
-%%
+basetime = [-300, -100];
+base_idx = dsearchn(window_centres', basetime');
 
-figure(1), clf
-subplot(211)
-plot(hz, abs(annaX).^2)
-xlabel('frequency [Hz]')
-ylabel('power')
-xlim([0, 5])
+hz = linspace(0, fs/2, (timewin / 2) + 1);
 
-subplot(212)
-plot(hzf, abs(annaXf).^2)
-xlabel('frequency [Hz]')
-ylabel('power')
-xlim([0, 5])
+hanwin = 0.5 - (0.5 * cos(2*pi.*linspace(0, 1, timewin)))';
 
+tf = zeros(length(frex), length(window_centres));
 
-%%
+chan = 5;
+data = EEG.data(chan, :, :);
+
+for i = 1:length(window_centres)
+    time_inds = [window_centres(i) - floor(timewin / 2) + 1, ...
+                 window_centres(i) + ceil(timewin / 2)];
+    data_sub = squeeze(data(:, time_inds(1):time_inds(2), :));
+    data_sub = baxfun(@times, data_sub, hanwin);
+
+    data_subX = fft(data_sub) ./ timewin;
+    mean_pow = mean(abs(data_sub).^2), 2);
+end
