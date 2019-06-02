@@ -52,3 +52,5 @@ contourf(fft_centres, 1:num_f, tf_norm, 40, 'linecolor','none')
 set(gca,'clim',[-2 2])
 ylim([0, 20])
 xlabel('Time (ms)'), ylabel('Frequency (Hz)')
+
+%%
