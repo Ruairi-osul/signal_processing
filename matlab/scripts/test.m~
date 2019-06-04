@@ -1,12 +1,20 @@
-clear all
-folder_path = '/home/ruairi/repos/signal_processing/matlab';
-addpath(genpath(folder_path))
-load('sampleEEGdata.mat')
-
+folder_path = '/home/ruairi/repos/signal_processing';
+addpath(genpath(folder_path));
 %%
 
-chan_ind = 43;
-trial_ind = 4;
-data = EEG.data(chan_ind, :, trial_ind);
-t = EEG.times;
+load('emg4TKEO.mat')
 
+%%
+filtered = tkeo(emg);
+
+%% normalise
+
+baseline = 1:100;
+
+filtered = 
+
+
+%%
+figure(1), clf
+plot(emgtime, emg), hold on
+plot(emgtime, filtered)
