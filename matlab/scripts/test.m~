@@ -1,20 +1,56 @@
+%folder_path = 'C:\Users\Rory\extra_repos\signal_processing';
 folder_path = '/home/ruairi/repos/signal_processing';
+
 addpath(genpath(folder_path));
 %%
+clear 
 
-load('emg4TKEO.mat')
+[data, fs] = audioread('XC403881.wav');
+
+[n_samps, n_chans] = size(data);
+
+choi = data(:, 1);
+choi = detrend(choi);
+
+%% FFT
+
+
+coefs = rfft(choi);
+hz = rfftfreq(n_samps, fs);
 
 %%
-filtered = tkeo(emg);
 
-%% normalise
-
-baseline = 1:100;
-
-filtered = 
-
-
-%%
 figure(1), clf
-plot(emgtime, emg), hold on
-plot(emgtime, filtered)
+plot(hz, abs(coefs))
+xlim([0, 15000]) 
+title('static fft')
+
+%%
+
+[coefs, hz, t] = spectrogram(choi, hann(1000), 100, [], fs);
+
+normed = db_normalise_fun(abs(coefs), t, [0, 3]);
+
+%%
+figure(2), clf
+subplot(211)
+imagesc(t, hz, normed)
+axis xy
+colorbar
+set(gca, 'clim', [-10, 10])
+ylim([0, 15000])
+colormap hot
+title('sFFT with imagesc')
+
+subplot(212)
+contourf(t, hz, normed, 'linecolor', 'none');
+set(gca, 'clim', [-10, 10])
+ylim([0, 15000])
+colorbar
+colormap hot
+title('sFFT with contourf')
+
+
+%%
+figure(3), clf
+[cwt(choi, fs)

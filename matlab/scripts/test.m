@@ -1,20 +1,59 @@
-folder_path = 'C:\Users\Rory\extra_repos\signal_processing';
+%folder_path = 'C:\Users\Rory\extra_repos\signal_processing';
+folder_path = '/home/ruairi/repos/signal_processing';
+
 addpath(genpath(folder_path));
 %%
+clear 
 
-n = 10000;
-sig = brownian_noise(n)';
+[data, fs] = audioread('XC403881.wav');
 
-sig_drift = sig + linspace(-100, 100, n);
+[n_samps, n_chans] = size(data);
 
-detrented = detrend(sig_drift);
+choi = data(:, 1);
+choi = detrend(choi);
+
+%% FFT
+
+
+coefs = rfft(choi);
+hz = rfftfreq(n_samps, fs);
 
 %%
+
 figure(1), clf
+plot(hz, abs(coefs))
+xlim([0, 15000]) 
+title('static fft')
+
+%%
+
+[coefs, hz, t] = spectrogram(choi, hann(1000), 100, [], fs);
+
+normed = db_normalise_fun(abs(coefs), t, [0, 3]);
+
+%%
+figure(2), clf
 subplot(211)
-plot(sig_drift)
-title('original signal')
+imagesc(t, hz, normed)
+axis xy
+colorbar
+set(gca, 'clim', [-10, 10])
+ylim([0, 15000])
+colormap hot
+title('sFFT with imagesc')
 
 subplot(212)
-plot(detrented)
-title('detrended signal')
+contourf(t, hz, normed, 'linecolor', 'none');
+set(gca, 'clim', [-10, 10])
+ylim([0, 15000])
+colorbar
+colormap hot
+title('sFFT with contourf')
+
+
+%%
+[coefs, f] = cwt(choi, fs);
+
+%%
+figure(3), clf
+contourf(1:n_samps, f, abs(coefs), 159, 'linecolor', 'none')
