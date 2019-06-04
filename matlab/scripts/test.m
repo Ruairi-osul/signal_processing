@@ -1,28 +1,20 @@
-folder_path = '/home/ruairi/repos/signal_processing';
+folder_path = 'C:\Users\Rory\extra_repos\signal_processing';
 addpath(genpath(folder_path));
 %%
 
-load('emg4TKEO.mat')
+n = 10000;
+sig = brownian_noise(n)';
 
-%%
-filtered = tkeo(emg);
+sig_drift = sig + linspace(-100, 100, n);
 
-%% normalise
-
-filtered_normed = zscore(filtered);
-emg_normed = zscore(emg);
-
+detrented = detrend(sig_drift);
 
 %%
 figure(1), clf
 subplot(211)
-plot(emgtime, emg), hold on
-plot(emgtime, filtered)
-title('TKEO of EMG')
-hold off
+plot(sig_drift)
+title('original signal')
 
 subplot(212)
-plot(emgtime, emg_normed), hold on
-plot(emgtime, filtered_normed)
-title('Z score normalised')
-hold off
+plot(detrented)
+title('detrended signal')
