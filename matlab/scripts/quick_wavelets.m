@@ -16,7 +16,7 @@ min_f = 2;
 max_f = 30;
 wt = -2:1/EEG.srate:2;
 
-[tf, f] = wavelet_fun(data, min_f,max_f, num_f, wt);
+[tf, f] = wavelet_fun(data, min_f, max_f, num_f, wt);
 
 %%
 

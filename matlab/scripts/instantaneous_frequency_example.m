@@ -20,6 +20,7 @@ filtered_sig = bandpass2(sig, fs, low, high);
 inst_f = instantaneous_frequency(filtered_sig, fs);
 
 inst_f_filtered = medfilt1(inst_f, 40);
+
 %%
 
 figure(1), clf
